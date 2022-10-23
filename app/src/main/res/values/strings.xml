@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ThirdTry</string>
+    <string name="title_label">Bands:</string>
+    <string name="date_label">Date:</string>
+    <string name="time_label">Time:</string>
+    <string name="location_label">Location:</string>
+    <string name="extra_info_label">Extra Information:</string>
 </resources>
