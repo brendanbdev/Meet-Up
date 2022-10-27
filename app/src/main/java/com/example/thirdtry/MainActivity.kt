@@ -9,9 +9,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.thirdtry.ui.theme.ThirdTryTheme
@@ -21,12 +24,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ThirdTryTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-
+                Scaffold() { padding ->
+                    EventCreationScreen(Modifier.padding(padding))
                 }
             }
         }
@@ -55,35 +54,82 @@ fun ThirdTryApp() {
 fun EventCreationScreen(modifier: Modifier = Modifier) {
     Column(
         modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
+            .padding(start = 32.dp, end = 32.dp, top = 32.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
-        TextFieldForEventInfo(label = R.string.title_label)
-        TextFieldForEventInfo(label = R.string.date_label)
-        TextFieldForEventInfo(label = R.string.time_label)
-        TextFieldForEventInfo(label = R.string.location_label)
-        TextFieldForEventInfo(label = R.string.extra_info_label)
+        Text(
+            text = "Post an event:",
+            style = MaterialTheme.typography.h1,
+            modifier = Modifier
+        )
+        TitleTextField()
+        DateTextField()
+        TimeTextField()
+        LocationTextField()
+        ExtraInfoTextField()
     }
 }
 
 @Composable
 fun TextFieldForEventInfo(
     modifier: Modifier = Modifier,
-    @StringRes label: Int,
+    @StringRes exteriorLabel: Int,
 ) {
-    Column(
-        modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        Text(
-            text = stringResource(label),
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = "",
-            onValueChange = {},
-        )
+    var textFieldState by remember {
+        mutableStateOf("")
     }
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        label = {
+            Text(stringResource(exteriorLabel))
+                },
+        value = textFieldState,
+        onValueChange = {
+            textFieldState = it
+                        },
+    )
+}
+
+@Composable
+fun CreateEventButton() {
+    Button(onClick = { /*TODO*/ }) {
+        Text("Create Event")
+    }
+}
+
+@Composable
+fun TitleTextField(
+    modifier: Modifier = Modifier,
+) {
+    TextFieldForEventInfo(exteriorLabel = R.string.title_label)
+}
+
+@Composable
+fun DateTextField(
+    modifier: Modifier = Modifier,
+) {
+    TextFieldForEventInfo(exteriorLabel = R.string.date_label)
+}
+
+@Composable
+fun TimeTextField(
+    modifier: Modifier = Modifier,
+) {
+    TextFieldForEventInfo(exteriorLabel = R.string.time_label)
+}
+
+@Composable
+fun LocationTextField(
+    modifier: Modifier = Modifier,
+) {
+    TextFieldForEventInfo(exteriorLabel = R.string.location_label)
+}
+
+@Composable
+fun ExtraInfoTextField(
+    modifier: Modifier = Modifier,
+) {
+    TextFieldForEventInfo(exteriorLabel = R.string.extra_info_label)
 }

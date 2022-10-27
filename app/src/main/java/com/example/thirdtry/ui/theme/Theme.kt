@@ -25,7 +25,7 @@ private val DarkColorPalette = darkColors(
     surface = Color.White.copy(alpha = 0.15f),
     onPrimary = DarkestPurple,
     onSecondary = DarkestPurple,
-    onBackground = LightestPurple,
+    onBackground = Color.White,
     onSurface = Color.White.copy(alpha = .8f)
 )
 
