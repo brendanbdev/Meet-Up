@@ -57,26 +57,4 @@ fun ThirdTryAppPreview() {
     ThirdTryApp()
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ThirdTryAppPreview() {
-//    ThirdTryTheme {
-//        var currentScreen: HardcoreDestination by remember { mutableStateOf(CreateEvent) }
-//        val navController = rememberNavController()
-//        Scaffold() { innerPadding ->
-//            NavHost(
-//                navController = navController,
-//                startDestination = CreateEvent.route,
-//                modifier = Modifier.padding(innerPadding)
-//            ) {
-//                composable(route = CreateEvent.route) {
-//                    CreateEvent.screen()
-//                }
-//                composable(route = CreateEvent.route) {
-//                    EventList.screen()
-//                }
-//            }
-//        }
-//    }
-//}
 

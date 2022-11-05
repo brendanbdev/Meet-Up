@@ -1,5 +1,7 @@
 package com.example.thirdtry.ui.create
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +23,14 @@ import androidx.compose.runtime.getValue
 import com.example.thirdtry.Event
 import com.example.thirdtry.R
 import com.example.thirdtry.events
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+
 
 @Composable
 fun EventCreationScreen(modifier: Modifier = Modifier) {
+    val db = Firebase.firestore
+    val eventsCollection = db.collection("events")
     Column(
         modifier
             .padding(start = 32.dp, end = 32.dp, top = 32.dp)
@@ -102,22 +109,21 @@ fun EventCreationScreen(modifier: Modifier = Modifier) {
             },
         )
         Button(onClick = {
-            events.add(
-                object : Event {
-                override val id: Int
-                    get() = super.id
-                override val title: String
-                    get() = titleTextFieldState
-                override val date: String
-                    get() = dateTextFieldState
-                override val time: String
-                    get() = timeTextFieldState
-                override val location: String
-                    get() = locationTextFieldState
-                override val extraInfo: String
-                    get() = extraInfoTextFieldState
-                }
+            val event = hashMapOf(
+                "title" to titleTextFieldState,
+                "date" to dateTextFieldState,
+                "time" to timeTextFieldState,
+                "location" to locationTextFieldState,
+                "extraInfo" to extraInfoTextFieldState,
             )
+            eventsCollection
+                .add(event)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error adding document", e)
+                }
         })
         {
             Text("Create Event")
