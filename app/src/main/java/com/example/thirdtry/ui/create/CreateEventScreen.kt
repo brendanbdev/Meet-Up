@@ -20,17 +20,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
-import com.example.thirdtry.Event
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.thirdtry.*
 import com.example.thirdtry.R
-import com.example.thirdtry.events
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-
 @Composable
 fun EventCreationScreen(modifier: Modifier = Modifier) {
+    var titleTextFieldState by rememberSaveable {
+        mutableStateOf("")
+    }
+    var dateTextFieldState by rememberSaveable {
+        mutableStateOf("")
+    }
+    var timeTextFieldState by rememberSaveable {
+        mutableStateOf("")
+    }
+    var locationTextFieldState by rememberSaveable {
+        mutableStateOf("")
+    }
+    var extraInfoTextFieldState by rememberSaveable {
+        mutableStateOf("")
+    }
+    val event = hashMapOf(
+        "title" to titleTextFieldState,
+        "date" to dateTextFieldState,
+        "time" to timeTextFieldState,
+        "location" to locationTextFieldState,
+        "extraInfo" to extraInfoTextFieldState,
+    )
     val db = Firebase.firestore
     val eventsCollection = db.collection("events")
+
     Column(
         modifier
             .padding(start = 32.dp, end = 32.dp, top = 32.dp)
@@ -43,21 +65,6 @@ fun EventCreationScreen(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.h1,
             modifier = Modifier
         )
-        var titleTextFieldState by remember {
-            mutableStateOf("")
-        }
-        var dateTextFieldState by remember {
-            mutableStateOf("")
-        }
-        var timeTextFieldState by remember {
-            mutableStateOf("")
-        }
-        var locationTextFieldState by remember {
-            mutableStateOf("")
-        }
-        var extraInfoTextFieldState by remember {
-            mutableStateOf("")
-        }
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             label = {
@@ -109,17 +116,11 @@ fun EventCreationScreen(modifier: Modifier = Modifier) {
             },
         )
         Button(onClick = {
-            val event = hashMapOf(
-                "title" to titleTextFieldState,
-                "date" to dateTextFieldState,
-                "time" to timeTextFieldState,
-                "location" to locationTextFieldState,
-                "extraInfo" to extraInfoTextFieldState,
-            )
             eventsCollection
                 .add(event)
                 .addOnSuccessListener { documentReference ->
                     Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    getAllEvents()
                 }
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
