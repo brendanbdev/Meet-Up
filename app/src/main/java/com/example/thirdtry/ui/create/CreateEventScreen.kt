@@ -8,26 +8,33 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import com.example.thirdtry.*
+import androidx.navigation.NavHostController
 import com.example.thirdtry.R
+import com.example.thirdtry.getAllEvents
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+
+//import androidx.navigation.NavType
+//import androidx.navigation.compose.navArgument
 
 @Composable
-fun EventCreationScreen(modifier: Modifier = Modifier) {
+fun EventCreationScreen(
+    modifier: Modifier = Modifier,
+    scaffoldState: ScaffoldState,
+    scope: CoroutineScope,
+    navController: NavHostController
+) {
     var titleTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
@@ -120,7 +127,12 @@ fun EventCreationScreen(modifier: Modifier = Modifier) {
                 .add(event)
                 .addOnSuccessListener { documentReference ->
                     Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                    getAllEvents()
+                        getAllEvents(
+                            creatingEvent = true,
+                            navController,
+                            scope,
+                            scaffoldState
+                        )
                 }
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
