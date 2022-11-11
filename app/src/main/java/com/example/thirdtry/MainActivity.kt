@@ -51,7 +51,7 @@ fun ThirdTryApp() {
                     onTabSelected = { newScreen ->
                         navController.navigateSingleTopTo(
                             newScreen.route,
-                            pRestoreState = true)
+                            pRestoreState = false)
                                     },
                     currentScreen = currentScreen,
                 )
@@ -102,9 +102,11 @@ fun getAllEvents(
                     pRestoreState = true
                 )
                 scope?.launch {
+                    scaffoldState?.snackbarHostState?.currentSnackbarData?.dismiss()
                     scaffoldState?.snackbarHostState?.showSnackbar("Your event was created!")
                 }
             }
+            navController?.clearBackStack(CreateEvent.route)
         }
         .addOnFailureListener { exception ->
             Log.d(ContentValues.TAG, "Error getting documents: ", exception)

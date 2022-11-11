@@ -24,6 +24,7 @@ import com.example.thirdtry.getAllEvents
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 //import androidx.navigation.NavType
 //import androidx.navigation.compose.navArgument
@@ -65,12 +66,12 @@ fun EventCreationScreen(
             .padding(start = 32.dp, end = 32.dp, top = 32.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(32.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = "Post an event:",
             style = MaterialTheme.typography.h1,
-            modifier = Modifier
+            modifier = Modifier.padding(vertical = 16.dp)
         )
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -122,7 +123,13 @@ fun EventCreationScreen(
                 extraInfoTextFieldState = it
             },
         )
-        Button(onClick = {
+        Button(
+            onClick = {
+            scope.launch {
+                scaffoldState.snackbarHostState.showSnackbar(
+                    message = "Creating your event...",
+                    duration = SnackbarDuration.Indefinite)
+            }
             eventsCollection
                 .add(event)
                 .addOnSuccessListener { documentReference ->
@@ -136,8 +143,11 @@ fun EventCreationScreen(
                 }
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
+                    scope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar("There was a problem. Your event was not created.")
+                    }
                 }
-        })
+            })
         {
             Text("Create Event")
         }
