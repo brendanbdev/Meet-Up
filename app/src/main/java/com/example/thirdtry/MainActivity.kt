@@ -7,27 +7,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.thirdtry.ui.components.HardcoreTabRow
 import com.example.thirdtry.ui.theme.ThirdTryTheme
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            getAllEvents(creatingEvent = false, null, null, null)
+            getAllEvents()
             ThirdTryApp()
         }
     }
@@ -67,12 +63,7 @@ fun ThirdTryApp() {
     }
 }
 
-fun getAllEvents(
-    creatingEvent: Boolean,
-    navController: NavHostController?,
-    scope: CoroutineScope?,
-    scaffoldState: ScaffoldState?
-) {
+fun getAllEvents() {
     val db = Firebase.firestore
     val eventsCollection = db.collection("events")
     var eventToBeAdded: MutableMap<String, Any>
@@ -96,22 +87,8 @@ fun getAllEvents(
                 )
                 Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
             }
-            if (creatingEvent) {
-                navController?.navigateSingleTopTo(
-                    EventList.route,
-                    pRestoreState = true
-                )
-                scope?.launch {
-                    scaffoldState?.snackbarHostState?.currentSnackbarData?.dismiss()
-                    scaffoldState?.snackbarHostState?.showSnackbar("Your event was created!")
-                }
-            }
-            navController?.clearBackStack(CreateEvent.route)
         }
         .addOnFailureListener { exception ->
             Log.d(ContentValues.TAG, "Error getting documents: ", exception)
         }
 }
-
-
-

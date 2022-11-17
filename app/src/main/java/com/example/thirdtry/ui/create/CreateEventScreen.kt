@@ -1,6 +1,6 @@
 package com.example.thirdtry.ui.create
 
-import android.content.ContentValues.TAG
+import android.content.ContentValues
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,25 +9,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.thirdtry.*
 import com.example.thirdtry.R
-import com.example.thirdtry.getAllEvents
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-//import androidx.navigation.NavType
-//import androidx.navigation.compose.navArgument
 
 @Composable
 fun EventCreationScreen(
@@ -36,19 +29,19 @@ fun EventCreationScreen(
     scope: CoroutineScope,
     navController: NavHostController
 ) {
-    var titleTextFieldState by rememberSaveable {
+    var titleTextFieldState by remember {
         mutableStateOf("")
     }
-    var dateTextFieldState by rememberSaveable {
+    var dateTextFieldState by remember {
         mutableStateOf("")
     }
-    var timeTextFieldState by rememberSaveable {
+    var timeTextFieldState by remember {
         mutableStateOf("")
     }
-    var locationTextFieldState by rememberSaveable {
+    var locationTextFieldState by remember {
         mutableStateOf("")
     }
-    var extraInfoTextFieldState by rememberSaveable {
+    var extraInfoTextFieldState by remember {
         mutableStateOf("")
     }
     val event = hashMapOf(
@@ -123,31 +116,66 @@ fun EventCreationScreen(
                 extraInfoTextFieldState = it
             },
         )
+        var buttonEnabled by remember {mutableStateOf(true)}
         Button(
+            modifier = Modifier.padding(vertical = 16.dp),
+            enabled = buttonEnabled,
             onClick = {
+                buttonEnabled = false
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
                     message = "Creating your event...",
-                    duration = SnackbarDuration.Indefinite)
+                    duration = SnackbarDuration.Indefinite
+                )
             }
-            eventsCollection
-                .add(event)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                        getAllEvents(
-                            creatingEvent = true,
-                            navController,
-                            scope,
-                            scaffoldState
-                        )
-                }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error adding document", e)
-                    scope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar("There was a problem. Your event was not created.")
+                eventsCollection
+                    .add(event)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        var eventToBeAdded: MutableMap<String, Any>
+
+                        events.clear()
+
+                        eventsCollection
+                            .get()
+                            .addOnSuccessListener { result ->
+                                for (document in result) {
+                                    //eventToBeAdded is one read, rather than a read for every value for an Event object
+                                    eventToBeAdded = document.data as MutableMap<String, Any>
+                                    events.add(
+                                        object : Event {
+                                            override val title: String = eventToBeAdded["title"].toString()
+                                            override val date: String = eventToBeAdded["date"].toString()
+                                            override val time: String = eventToBeAdded["time"].toString()
+                                            override val location: String = eventToBeAdded["location"].toString()
+                                            override val extraInfo: String = eventToBeAdded["extraInfo"].toString()
+                                        }
+                                    )
+                                    navController.navigateSingleTopTo(
+                                        EventList.route,
+                                        pRestoreState = true
+                                    )
+                                    Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.d(ContentValues.TAG, "Error getting documents: ", exception)
+                                buttonEnabled = true
+                            }
+                        scope.launch {
+                            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+                            scaffoldState.snackbarHostState.showSnackbar("Your event was created!")
+                        }
                     }
-                }
-            })
+                    .addOnFailureListener { e ->
+                        Log.w(ContentValues.TAG, "Error adding document", e)
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar("There was a problem. Your event was not created.")
+                            buttonEnabled = true
+                        }
+                    }
+            }
+        )
         {
             Text("Create Event")
         }

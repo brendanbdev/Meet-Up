@@ -39,7 +39,7 @@ fun HardcoreNavHost(
 
 fun NavHostController.navigateSingleTopTo(
     route: String,
-    pRestoreState: Boolean
+    pRestoreState: Boolean = false
 ) =
     this.navigate(route) {
         // Pop up to the start destination of the graph to
