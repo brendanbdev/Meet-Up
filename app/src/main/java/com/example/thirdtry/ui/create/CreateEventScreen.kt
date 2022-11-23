@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,19 +30,19 @@ fun EventCreationScreen(
     scope: CoroutineScope,
     navController: NavHostController
 ) {
-    var titleTextFieldState by remember {
+    var titleTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
-    var dateTextFieldState by remember {
+    var dateTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
-    var timeTextFieldState by remember {
+    var timeTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
-    var locationTextFieldState by remember {
+    var locationTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
-    var extraInfoTextFieldState by remember {
+    var extraInfoTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
     val event = hashMapOf(
@@ -151,6 +152,11 @@ fun EventCreationScreen(
                                             override val extraInfo: String = eventToBeAdded["extraInfo"].toString()
                                         }
                                     )
+                                    titleTextFieldState = ""
+                                    dateTextFieldState = ""
+                                    timeTextFieldState = ""
+                                    locationTextFieldState = ""
+                                    extraInfoTextFieldState = ""
                                     navController.navigateSingleTopTo(
                                         EventList.route,
                                         pRestoreState = true

@@ -55,9 +55,9 @@ fun ThirdTryApp() {
         ) { innerPadding ->
             HardcoreNavHost(
                 navController = navController,
-                modifier = Modifier.padding(innerPadding),
                 scaffoldState = scaffoldState,
-                scope = scope
+                scope = scope,
+                modifier = Modifier.padding(innerPadding)
             )
         }
     }
