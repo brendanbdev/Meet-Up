@@ -158,8 +158,7 @@ fun EventCreationScreen(
                                     locationTextFieldState = ""
                                     extraInfoTextFieldState = ""
                                     navController.navigateSingleTopTo(
-                                        EventList.route,
-                                        pRestoreState = true
+                                        EventList.route
                                     )
                                     Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
                                 }
