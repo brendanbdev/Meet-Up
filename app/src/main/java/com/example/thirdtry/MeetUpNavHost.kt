@@ -7,12 +7,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.thirdtry.ui.create.EventCreationScreen
-import com.example.thirdtry.ui.list.EventListScreen
+import com.example.thirdtry.ui.create.MeetUpCreationScreen
+import com.example.thirdtry.ui.list.MeetUpListScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun HardcoreNavHost(
+fun MeetUpNavHost(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
@@ -20,19 +20,19 @@ fun HardcoreNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = CreateEvent.route,
+        startDestination = CreateMeetUp.route,
         modifier = modifier
     ) {
         // builder parameter will be defined here as the graph
-        composable(route = CreateEvent.route) {
-            EventCreationScreen(
+        composable(route = CreateMeetUp.route) {
+            MeetUpCreationScreen(
                 scaffoldState = scaffoldState,
                 scope = scope,
                 navController = navController
             )
         }
-        composable(route = EventList.route) {
-            EventListScreen()
+        composable(route = MeetUpList.route) {
+            MeetUpListScreen()
         }
     }
 }
@@ -51,8 +51,8 @@ fun NavHostController.navigateSingleTopTo(
             saveState = true
         }
         // Avoid multiple copies of the same destination when
-        // reselecting the same item
+        // re-selecting the same item
         launchSingleTop = true
-        // Restore state when reselecting a previously selected item
+        // Restore state when re-selecting a previously selected item
         restoreState = pRestoreState
     }

@@ -14,8 +14,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.thirdtry.ui.components.HardcoreTabRow
-import com.example.thirdtry.ui.theme.ThirdTryTheme
+import com.example.thirdtry.ui.components.MeetUpTabRow
+import com.example.thirdtry.ui.theme.MeetUpTheme
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -23,27 +23,27 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            getAllEvents()
-            ThirdTryApp()
+            getAllMeetUps()
+            MeetUpTryApp()
         }
     }
 }
 
 @Composable
-fun ThirdTryApp() {
-    ThirdTryTheme {
+fun MeetUpTryApp() {
+    MeetUpTheme {
         val navController = rememberNavController()
         val currentBackStack by navController.currentBackStackEntryAsState()
         val currentDestination = currentBackStack?.destination
-        val currentScreen = hardcoreTabRowScreens.find { it.route == currentDestination?.route } ?: CreateEvent
+        val currentScreen = meetUpTabRowScreens.find { it.route == currentDestination?.route } ?: CreateMeetUp
         val scaffoldState = rememberScaffoldState()
         val scope = rememberCoroutineScope()
 
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
-                HardcoreTabRow(
-                    allScreens = hardcoreTabRowScreens,
+                MeetUpTabRow(
+                    allScreens = meetUpTabRowScreens,
                     onTabSelected = { newScreen ->
                         navController.navigateSingleTopTo(
                             newScreen.route,
@@ -53,7 +53,7 @@ fun ThirdTryApp() {
                 )
             }
         ) { innerPadding ->
-            HardcoreNavHost(
+            MeetUpNavHost(
                 navController = navController,
                 scaffoldState = scaffoldState,
                 scope = scope,
@@ -63,26 +63,26 @@ fun ThirdTryApp() {
     }
 }
 
-fun getAllEvents() {
+fun getAllMeetUps() {
     val db = Firebase.firestore
-    val eventsCollection = db.collection("events")
-    var eventToBeAdded: MutableMap<String, Any>
+    val meetUpsCollection = db.collection("Meet Ups")
+    var meetUpToBeAdded: MutableMap<String, Any>
 
-    events.clear()
+    meetUps.clear()
 
-    eventsCollection
+    meetUpsCollection
         .get()
         .addOnSuccessListener { result ->
             for (document in result) {
-                //eventToBeAdded is one read, rather than a read for every value for an Event object
-                eventToBeAdded = document.data as MutableMap<String, Any>
-                events.add(
-                    object : Event {
-                        override val title: String = eventToBeAdded["title"].toString()
-                        override val date: String = eventToBeAdded["date"].toString()
-                        override val time: String = eventToBeAdded["time"].toString()
-                        override val location: String = eventToBeAdded["location"].toString()
-                        override val extraInfo: String = eventToBeAdded["extraInfo"].toString()
+                //meetUpToBeAdded is one read, rather than a read for every value for a MeetUp object
+                meetUpToBeAdded = document.data as MutableMap<String, Any>
+                meetUps.add(
+                    object : MeetUp {
+                        override val title: String = meetUpToBeAdded["title"].toString()
+                        override val date: String = meetUpToBeAdded["date"].toString()
+                        override val time: String = meetUpToBeAdded["time"].toString()
+                        override val location: String = meetUpToBeAdded["location"].toString()
+                        override val extraInfo: String = meetUpToBeAdded["extraInfo"].toString()
                     }
                 )
                 Log.d(ContentValues.TAG, "${document.id} => ${document.data}")

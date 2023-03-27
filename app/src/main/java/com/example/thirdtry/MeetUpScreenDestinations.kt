@@ -5,19 +5,19 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.graphics.vector.ImageVector
 
-interface HardcoreDestination {
+interface MeetUpScreenDestination {
     val icon: ImageVector
     val route: String
 }
 
-object CreateEvent : HardcoreDestination {
+object CreateMeetUp : MeetUpScreenDestination {
     override val icon = Icons.Filled.Add
-    override val route = "create"
+    override val route = "Create"
 }
 
-object EventList : HardcoreDestination {
+object MeetUpList : MeetUpScreenDestination {
     override val icon = Icons.Filled.List
-    override val route = "list"
+    override val route = "Meet Ups"
 }
 
-val hardcoreTabRowScreens = listOf(CreateEvent, EventList)
+val meetUpTabRowScreens = listOf(CreateMeetUp, MeetUpList)

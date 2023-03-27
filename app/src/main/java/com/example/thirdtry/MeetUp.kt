@@ -1,8 +1,8 @@
 package com.example.thirdtry
 
-val events: MutableList<Event> = mutableListOf()
+val meetUps: MutableList<MeetUp> = mutableListOf()
 
-interface Event {
+interface MeetUp {
     val title: String
     val date: String
     val time: String

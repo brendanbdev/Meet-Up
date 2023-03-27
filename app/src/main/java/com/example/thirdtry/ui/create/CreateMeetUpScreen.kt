@@ -24,7 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun EventCreationScreen(
+fun MeetUpCreationScreen(
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
@@ -45,7 +45,7 @@ fun EventCreationScreen(
     var extraInfoTextFieldState by rememberSaveable {
         mutableStateOf("")
     }
-    val event = hashMapOf(
+    val meetUp = hashMapOf(
         "title" to titleTextFieldState,
         "date" to dateTextFieldState,
         "time" to timeTextFieldState,
@@ -53,7 +53,7 @@ fun EventCreationScreen(
         "extraInfo" to extraInfoTextFieldState,
     )
     val db = Firebase.firestore
-    val eventsCollection = db.collection("events")
+    val meetUpsCollection = db.collection("Meet Ups")
 
     Column(
         modifier
@@ -63,8 +63,9 @@ fun EventCreationScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Post an event:",
+            text = "Post a Meet Up:",
             style = MaterialTheme.typography.h1,
+            color = MaterialTheme.colors.onBackground,
             modifier = Modifier.padding(vertical = 16.dp)
         )
         OutlinedTextField(
@@ -125,31 +126,31 @@ fun EventCreationScreen(
                 buttonEnabled = false
             scope.launch {
                 scaffoldState.snackbarHostState.showSnackbar(
-                    message = "Creating your event...",
+                    message = "Creating your Meet Up...",
                     duration = SnackbarDuration.Indefinite
                 )
             }
-                eventsCollection
-                    .add(event)
+                meetUpsCollection
+                    .add(meetUp)
                     .addOnSuccessListener { documentReference ->
                         Log.d(ContentValues.TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-                        var eventToBeAdded: MutableMap<String, Any>
+                        var meetUpToBeAdded: MutableMap<String, Any>
 
-                        events.clear()
+                        meetUps.clear()
 
-                        eventsCollection
+                        meetUpsCollection
                             .get()
                             .addOnSuccessListener { result ->
                                 for (document in result) {
-                                    //eventToBeAdded is one read, rather than a read for every value for an Event object
-                                    eventToBeAdded = document.data as MutableMap<String, Any>
-                                    events.add(
-                                        object : Event {
-                                            override val title: String = eventToBeAdded["title"].toString()
-                                            override val date: String = eventToBeAdded["date"].toString()
-                                            override val time: String = eventToBeAdded["time"].toString()
-                                            override val location: String = eventToBeAdded["location"].toString()
-                                            override val extraInfo: String = eventToBeAdded["extraInfo"].toString()
+                                    //meetUpToBeAdded is one read, rather than a read for every value for an MeetUp object
+                                    meetUpToBeAdded = document.data as MutableMap<String, Any>
+                                    meetUps.add(
+                                        object : MeetUp {
+                                            override val title: String = meetUpToBeAdded["title"].toString()
+                                            override val date: String = meetUpToBeAdded["date"].toString()
+                                            override val time: String = meetUpToBeAdded["time"].toString()
+                                            override val location: String = meetUpToBeAdded["location"].toString()
+                                            override val extraInfo: String = meetUpToBeAdded["extraInfo"].toString()
                                         }
                                     )
                                     titleTextFieldState = ""
@@ -158,7 +159,7 @@ fun EventCreationScreen(
                                     locationTextFieldState = ""
                                     extraInfoTextFieldState = ""
                                     navController.navigateSingleTopTo(
-                                        EventList.route
+                                        MeetUpList.route
                                     )
                                     Log.d(ContentValues.TAG, "${document.id} => ${document.data}")
                                 }
@@ -169,20 +170,20 @@ fun EventCreationScreen(
                             }
                         scope.launch {
                             scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
-                            scaffoldState.snackbarHostState.showSnackbar("Your event was created!")
+                            scaffoldState.snackbarHostState.showSnackbar("Your Meet Up was created!")
                         }
                     }
                     .addOnFailureListener { e ->
                         Log.w(ContentValues.TAG, "Error adding document", e)
                         scope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar("There was a problem. Your event was not created.")
+                            scaffoldState.snackbarHostState.showSnackbar("There was a problem. Your Meet Up was not created.")
                             buttonEnabled = true
                         }
                     }
             }
         )
         {
-            Text("Create Event")
+            Text("Create Meet Up")
         }
     }
 }
